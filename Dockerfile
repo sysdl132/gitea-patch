@@ -23,7 +23,7 @@ RUN if [ -n "${GITEA_VERSION}" ]; then git checkout "${GITEA_VERSION}"; fi \
  && make clean-all build
 
 FROM alpine:3.12
-LABEL maintainer="maintainers@gitea.io"
+#LABEL maintainer="maintainers@gitea.io"
 
 EXPOSE 22 3000
 
