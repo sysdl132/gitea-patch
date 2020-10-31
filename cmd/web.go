@@ -103,9 +103,11 @@ func runWeb(ctx *cli.Context) error {
 	defer cancel()
 
 	if os.Getppid() > 1 && len(os.Getenv("LISTEN_FDS")) > 0 {
-		log.Info("Restarting server ... sysdl132 on PID: %d from parent PID: %d", os.Getpid(), os.Getppid())
+		log.Info("Restarting server ... on PID: %d from parent PID: %d", os.Getpid(), os.Getppid())
 	} else {
-		log.Info("Gitea server -patched by sysdl132- is starting on PID: %d", os.Getpid())
+		log.Info("Gitea server is starting on PID: %d", os.Getpid())
+		log.Info("This version is patched by sysdl132")
+		log.Info("You can press Ctrl-C to shut it down")
 	}
 
 	// Set pid file setting
