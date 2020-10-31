@@ -103,9 +103,9 @@ func runWeb(ctx *cli.Context) error {
 	defer cancel()
 
 	if os.Getppid() > 1 && len(os.Getenv("LISTEN_FDS")) > 0 {
-		log.Info("Restarting Gitea on PID: %d from parent PID: %d", os.Getpid(), os.Getppid())
+		log.Info("Restarting Gitea server patched by sysdl132 on PID: %d from parent PID: %d", os.Getpid(), os.Getppid())
 	} else {
-		log.Info("Starting Gitea on PID: %d", os.Getpid())
+		log.Info("Starting Gitea server patched by sysdl132 on PID: %d", os.Getpid())
 	}
 
 	// Set pid file setting
@@ -203,11 +203,12 @@ func runWeb(ctx *cli.Context) error {
 	}
 
 	if err != nil {
-		log.Critical("Failed to start server: %v", err)
+		log.Critical("ERROR Failed to start server: %v", err)
 	}
 	log.Info("HTTP Listener: %s Closed", listenAddr)
 	<-graceful.GetManager().Done()
 	log.Info("PID: %d Gitea Web Finished", os.Getpid())
+	log.Info("KILLED gitea web")
 	log.Close()
 	return nil
 }
