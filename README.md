@@ -5,7 +5,7 @@
 
 
 
-
+![linux-build](https://github.com/sysdl132/gitea-patch/workflows/linux-build/badge.svg)
 
 
 
