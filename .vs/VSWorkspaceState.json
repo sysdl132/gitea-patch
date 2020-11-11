@@ -1,8 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\cmd"
+    "\\contrib\\ide\\vscode",
+    "\\custom\\conf",
+    "\\public\\vendor",
+    "\\public\\vendor\\plugins",
+    "\\templates"
   ],
-  "SelectedNode": "\\cmd\\web.go",
+  "SelectedNode": "\\templates\\home.tmpl",
   "PreviewInSolutionExplorer": false
 }
