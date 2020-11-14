@@ -50,7 +50,7 @@ func init() {
 func main() {
 	app := cli.NewApp()
 	app.Name = "Gitea"
-	app.Usage = "A painless self-hosted Git service -- patched by sysdl132"
+	app.Usage = "A painless self-hosted Git service"
 	app.Description = `By default, gitea will start serving using the webserver with no
 arguments - which can alternatively be run by running the subcommand web.`
 	app.Version = Version + formatBuiltWith()
@@ -69,6 +69,7 @@ arguments - which can alternatively be run by running the subcommand web.`
 		cmd.CmdManager,
 		cmd.Cmdembedded,
 		cmd.CmdMigrateStorage,
+		cmd.CmdDocs,
 	}
 	// Now adjust these commands to add our global configuration options
 

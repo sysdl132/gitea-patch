@@ -12,7 +12,7 @@ ENV TAGS "bindata timetzdata $TAGS"
 ARG CGO_EXTRA_CFLAGS
 
 #Build deps
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories; apk --no-cache add build-base git nodejs npm
+RUN apk --no-cache add build-base git nodejs npm
 
 #Setup repo
 COPY . ${GOPATH}/src/code.gitea.io/gitea
@@ -23,11 +23,11 @@ RUN if [ -n "${GITEA_VERSION}" ]; then git checkout "${GITEA_VERSION}"; fi \
  && make clean-all build
 
 FROM alpine:3.12
-#LABEL maintainer="maintainers@gitea.io"
+LABEL maintainer="maintainers@gitea.io"
 
 EXPOSE 22 3000
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories; apk --no-cache add \
+RUN apk --no-cache add \
     bash \
     ca-certificates \
     curl \

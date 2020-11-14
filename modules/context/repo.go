@@ -171,6 +171,18 @@ func (r *Repository) GetCommitsCount() (int64, error) {
 	})
 }
 
+// GetCommitGraphsCount returns cached commit count for current view
+func (r *Repository) GetCommitGraphsCount(hidePRRefs bool, branches []string, files []string) (int64, error) {
+	cacheKey := fmt.Sprintf("commits-count-%d-graph-%t-%s-%s", r.Repository.ID, hidePRRefs, branches, files)
+
+	return cache.GetInt64(cacheKey, func() (int64, error) {
+		if len(branches) == 0 {
+			return git.AllCommitsCount(r.Repository.RepoPath(), hidePRRefs, files...)
+		}
+		return git.CommitsCountFiles(r.Repository.RepoPath(), branches, files)
+	})
+}
+
 // BranchNameSubURL sub-URL for the BranchName field
 func (r *Repository) BranchNameSubURL() string {
 	switch {
@@ -222,11 +234,7 @@ func (r *Repository) GetEditorconfig() (*editorconfig.Editorconfig, error) {
 		return nil, err
 	}
 	defer reader.Close()
-	data, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return nil, err
-	}
-	return editorconfig.ParseBytes(data)
+	return editorconfig.Parse(reader)
 }
 
 // RetrieveBaseRepo retrieves base repository
@@ -453,10 +461,14 @@ func RepoAssignment() macaron.Handler {
 			ctx.Data["RepoExternalIssuesLink"] = unit.ExternalTrackerConfig().ExternalTrackerURL
 		}
 
-		ctx.Data["NumReleases"], err = models.GetReleaseCountByRepoID(ctx.Repo.Repository.ID, models.FindReleasesOptions{
-			IncludeDrafts: false,
-			IncludeTags:   true,
+		ctx.Data["NumTags"], err = models.GetReleaseCountByRepoID(ctx.Repo.Repository.ID, models.FindReleasesOptions{
+			IncludeTags: true,
 		})
+		if err != nil {
+			ctx.ServerError("GetReleaseCountByRepoID", err)
+			return
+		}
+		ctx.Data["NumReleases"], err = models.GetReleaseCountByRepoID(ctx.Repo.Repository.ID, models.FindReleasesOptions{})
 		if err != nil {
 			ctx.ServerError("GetReleaseCountByRepoID", err)
 			return

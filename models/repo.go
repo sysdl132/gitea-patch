@@ -410,8 +410,17 @@ func (repo *Repository) innerAPIFormat(e Engine, mode AccessMode, isParent bool)
 	numReleases, _ := GetReleaseCountByRepoID(repo.ID, FindReleasesOptions{IncludeDrafts: false, IncludeTags: true})
 
 	return &api.Repository{
-		ID:                        repo.ID,
-		Owner:                     repo.Owner.APIFormat(),
+		ID: repo.ID,
+		// TODO use convert.ToUser(repo.Owner)
+		Owner: &api.User{
+			ID:        repo.Owner.ID,
+			UserName:  repo.Owner.Name,
+			FullName:  repo.Owner.FullName,
+			Email:     repo.Owner.GetEmail(),
+			AvatarURL: repo.Owner.AvatarLink(),
+			LastLogin: repo.Owner.LastLoginUnix.AsTime(),
+			Created:   repo.Owner.CreatedUnix.AsTime(),
+		},
 		Name:                      repo.Name,
 		FullName:                  repo.FullName(),
 		Description:               repo.Description,
@@ -1492,6 +1501,10 @@ func updateRepository(e Engine, repo *Repository, visibilityChanged bool) (err e
 		return fmt.Errorf("update: %v", err)
 	}
 
+	if err = repo.updateSize(e); err != nil {
+		log.Error("Failed to update size for repository: %v", err)
+	}
+
 	if visibilityChanged {
 		if err = repo.getOwner(e); err != nil {
 			return fmt.Errorf("getOwner: %v", err)
@@ -1536,10 +1549,6 @@ func updateRepository(e Engine, repo *Repository, visibilityChanged bool) (err e
 			if err = updateRepository(e, forkRepos[i], true); err != nil {
 				return fmt.Errorf("updateRepository[%d]: %v", forkRepos[i].ID, err)
 			}
-		}
-
-		if err = repo.updateSize(e); err != nil {
-			log.Error("Failed to update size for repository: %v", err)
 		}
 	}
 
